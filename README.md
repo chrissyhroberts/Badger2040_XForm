@@ -38,33 +38,6 @@ Various aspects of the XLSForm are outside the scope of the device's limited cap
 
 *Both select_one and select_many type questions allow the use of image files instead of text
 
-### Text
-
-Text type questions allow the user to use buttons A <LEFT> and C <RIGHT> to scroll through a set of characters [A-Z + SPACE] and to select (Button C) or delete (select character DEL). At present the system does not wrap around from Z to A. Data entry takes a while and we expect that this type of question will be less often used that select types. 
-
-![img/question_integer.jpg](img/question_text.jpg)
-
-
-### Integer
-
-Integer type questions allow the user to use buttons A <-> and C <+> to increment either down or up through a numeric series. Pressing Button C changes the ordinal, meaning that increments can be in 1s, 10s, or 100s. The system has capability to set a range of values from a minimum to a maximum value. 
-
-![img/question_integer.jpg](img/question_integer.jpg)
-
-### Select One
-
-Select One type questions populate the screen with a list of possible answers from which the user can select exactly one option. If answer is required, exactly one option must be selected in order to progress. If answer is not required then either zero OR one option can be selected. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. 
-
-
-![img/question_select_one.jpg](img/question_select_one.jpg)  
-
-### Select Multiple
-
-Select Multiple type questions populate the screen with a list of possible answers from which the user can select zero or more options. If answer is required, then one or more option must be selected in order to progress. If answer is not required, then zero OR more options can be selected. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. 
-
-
-![img/question_select_many.jpg](img/question_select_many.jpg)  
-
 
 
 ## Question types on the wishlist
@@ -137,6 +110,36 @@ This assumes that you'll be adding the Badger2040_Xform software to BadgerOS
 * Upload any icons and jpegs you'll need for your form to the `icons` folder on the badger
 * Run form.py, either directly, or through the badgerOS interface.
 
+# Using form.py
+
+The user interface is pretty self-explanatory
+
+### Text
+
+Text type questions allow the user to use buttons A <LEFT> and C <RIGHT> to scroll through a set of characters [A-Z + SPACE] and to select (Button C) or delete (select character DEL). At present the system does not wrap around from Z to A. Data entry takes a while and we expect that this type of question will be less often used that select types. 
+
+![img/question_integer.jpg](img/question_text.jpg)
+
+
+### Integer
+
+Integer type questions allow the user to use buttons A <-> and C <+> to increment either down or up through a numeric series. Pressing Button C changes the ordinal, meaning that increments can be in 1s, 10s, or 100s. The system has capability to set a range of values from a minimum to a maximum value. 
+
+![img/question_integer.jpg](img/question_integer.jpg)
+
+### Select One
+
+Select One type questions populate the screen with a list of possible answers from which the user can select exactly one option. If answer is required, exactly one option must be selected in order to progress. If answer is not required then either zero OR one option can be selected. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. 
+
+
+![img/question_select_one.jpg](img/question_select_one.jpg)  
+
+### Select Multiple
+
+Select Multiple type questions populate the screen with a list of possible answers from which the user can select zero or more options. If answer is required, then one or more option must be selected in order to progress. If answer is not required, then zero OR more options can be selected. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. 
+
+
+![img/question_select_many.jpg](img/question_select_many.jpg)  
 
 
 
