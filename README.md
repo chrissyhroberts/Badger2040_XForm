@@ -4,11 +4,12 @@ An XForm interface for Badger2040
 The Badger 2040 is a wearable device with an e-ink display which comes in two flavours, either with or without WiFi. 
 
 
-The device has potential as a data collection system, especially in the context of long-term diarisation of events or observations. 
+The device has potential as a data collection system, especially in the context of data journaling of events or observations taking place across long periods of time.
+The device benefits from extremely low power draw, meaning that it can potentially be used in low resource settings where there is a lack of access to options for charging smart devices, and/or low device literacy. 
 
 This project aims to develop a framework for data collection using the Badger2040, using ODK's XLSForm architecture as the archetype. 
 
-Various aspects of the XLSForm are outside the scope of the device's limited capabilities, so we focus here on core survey functions.
+Various aspects of the XLSForm are outside the scope of the device's limited computational capabilities, so we focus here on core survey functions.
 
 
 # Requirements
