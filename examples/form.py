@@ -16,13 +16,18 @@ import ubinascii
 import jpegdec
 import os
 import io
+import random
 import badger2040 # https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger2040.py
 import badger_os #https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger_os.py
 
 print("starting form.py")
 
-# The ODK Build form definition to load. *** Must be an ODK Build json file, NOT an XForm xml or XLSForm xlsx! ***
+# The ODK Build form definition to load. * Must be an ODK Build json file, NOT an XForm xml or XLSForm xlsx! *
 form = "/forms/Badger 2040 Test.odkbuild"
+
+# The name and version ID of the ODK form on the Central server. This is the form that will ultimately receive the submission on Central
+serverform = "Badger-2040-Test-Acquire"
+versionid = "1688347654"
 
 # The cvs file to write and accumulate saved form results
 submissions = "/forms/submissions.csv"
@@ -152,21 +157,54 @@ def start():
 def save():
     global state
     global needs_refresh
-        
+
+    # Add a UUID that is compatible with ODK submissions to Central
+    # Generate a random UUID
+    uuid = '-'.join([''.join([random.choice('0123456789abcdef') for _ in range(8)]),
+                    ''.join([random.choice('0123456789abcdef') for _ in range(4)]),
+                    ''.join([random.choice('0123456789abcdef') for _ in range(4)]),
+                    ''.join([random.choice('0123456789abcdef') for _ in range(4)]),
+                    ''.join([random.choice('0123456789abcdef') for _ in range(12)])])
+
     # ISO8601 local time (no timezone!); see https://github.com/micropython/micropython/issues/3087
-    # Badger 2040 doesnt have RTC so time resets when wake up! So timestamp only meaningful when running from Thonny!
+    # Badger 2040 doesn't have an RTC, so the time resets when wake up! So the timestamp is only meaningful when running from Thonny!
     state['timestamp'] = "%04u-%02u-%02uT%02u:%02u:%02u" % time.localtime()[0:6]
-    
+
     # Append csv results to submissions file
     print("saving to '{}'".format(submissions))
     with open(submissions, "a") as f:
-        f.write(csv() + "\n")
-        
+        f.write(f"uuid:{uuid},{csv()}\n")
+
+    # Create individual XML file for the submission
+    folder_name = "instances/"
+    try:
+        os.mkdir("instances")
+    except OSError:
+        pass  # The directory already exists
+
+    try:
+        os.mkdir(folder_name)
+    except OSError:
+        pass  # The directory already exists
+
+    xml_filename = folder_name + "/uuid{uuid}.xml"
+    with open(xml_filename, "w") as xml_file:
+        xml_file.write(
+            f"<data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"{serverform}\"  version=\"{versionid}\">\n")
+        for i, control in enumerate(controls):
+            name = control['name']
+            value = state['values'][i]
+            xml_file.write(f"  <{name}>{value}</{name}>\n")
+        xml_file.write(f"  <timestamp>{state['timestamp']}</timestamp>\n")  # Add timestamp field
+        deviceid = ubinascii.hexlify(machine.unique_id()).decode("utf-8")
+        xml_file.write(f"  <device_id>{deviceid}</device_id>\n")  # Add device_id field
+        xml_file.write(f"  <meta><instanceID>uuid:{uuid}</instanceID></meta>\n")  # Add device_id field
+        xml_file.write("</data>")
+
     state['saved'] = True
-    
+
     display.set_update_speed(badger2040.UPDATE_FAST)
     needs_refresh = True
-
 
 def cancel():
     global state
