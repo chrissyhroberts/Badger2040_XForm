@@ -102,14 +102,19 @@ Jpg files with higher bit depth should work, but won't look as nice.
 
 This assumes that you'll be adding the Badger2040_Xform software to BadgerOS
 
+* Open Thonny and copy the contents of your local `examples` folder to the `examples` folder on the badger device
+   * form.py
+   * icon-form.jpg
+   * sendODK.py
+   * icon-sendODK.jpg
+* Upload any icons and jpegs you'll need for your form to the `icons` folder on the badger
+* Run form.py, either directly, or through the badgerOS interface.
+
 * Modify `form.py` line 25 to add the name of the current ODK Build JSON file.
 
   * For instance, if your new form is called "beagles.odkbuild", you would set line 25 to 
 `form = "/forms/beagles.odkbuild"`
 
-* Open Thonny and copy the contents of your local `examples` folder to the `examples` folder on the badger device
-* Upload any icons and jpegs you'll need for your form to the `icons` folder on the badger
-* Run form.py, either directly, or through the badgerOS interface.
 
 # Using form.py
 
@@ -135,12 +140,16 @@ Select One type questions populate the screen with a list of possible answers fr
 
 ![img/question_select_one.jpg](img/question_select_one.jpg)  
 
+![img/question_select_one_image.jpg](img/question_select_one_image.jpg)  
+
 ### Select Multiple
 
 Select Multiple type questions populate the screen with a list of possible answers from which the user can select zero or more options. If answer is required, then one or more option must be selected in order to progress. If answer is not required, then zero OR more options can be selected. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. Buttons A <PREVIOUS> and C <NEXT> move the cursor through the list of options. Button B {SELECT} selects the current option, moving the radio box checker to the current answer. Selecting the currently highlighted box removes the checker and returns and empty submission. 
 
 
 ![img/question_select_many.jpg](img/question_select_many.jpg)  
+
+![img/question_select_many.jpg](img/question_select_many_image.jpg)  
 
 
 
