@@ -187,7 +187,7 @@ def save():
     except OSError:
         pass  # The directory already exists
 
-    xml_filename = folder_name + "/uuid{uuid}.xml"
+    xml_filename = folder_name + f"/uuid{uuid}.xml"
     with open(xml_filename, "w") as xml_file:
         xml_file.write(
             f"<data xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"{serverform}\"  version=\"{versionid}\">\n")
