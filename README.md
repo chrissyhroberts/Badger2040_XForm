@@ -152,7 +152,11 @@ Select Multiple type questions populate the screen with a list of possible answe
 ![img/question_select_many.jpg](img/question_select_many_image.jpg)  
 
 
+## Submitting data to ODK central
 
+The `sendODK.py` app will connect to an instance of ODK central and allows submission of forms. 
+You'll need to modify your copy of sendODK.py to include your network SSID, password and so on. It also needs an ODK Central URL, username and password. 
+Note that you should probably use the credentials of a user who has no higher access level than `data collector` on ODK Collect. We don't recommend having devices lying around in the field which could reveal the username and password of a user with `data viewer`, `project manager` or `system admin`. The sendODK.py app has been tested and works with `data collector` user credentials.  
 
 
 
