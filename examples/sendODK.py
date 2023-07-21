@@ -37,7 +37,7 @@ def connect_to_wifi(ssid, password):
         display.text('Connecting to Wi-Fi...', 10, 20)
         display.update()
 
-    display.text('Connected to Wi-Fi', 10, 20)
+    display.text('Connected to Wi-Fi', 10, 40)
     display.text('Network config:' + str(wlan.ifconfig()), 10, 60)
     display.update()
 
@@ -67,10 +67,16 @@ def submit_submission(file_path, url, username, password):
     response = urequests.post(url, headers=headers, data=xml_data)
 
     if response.status_code in (200, 201):
+    	display.set_pen(0)  # Change this to 0 if a white background is used
+    	display.clear()
+    	display.set_pen(15)    	
         display.text('Submission successful', 10, 60)
         display.update()
         log_submission(file_path, success=True, response_text=response.text)
     else:
+    	display.set_pen(0)  # Change this to 0 if a white background is used
+    	display.clear()
+    	display.set_pen(15)    	
         display.text('Submission failed: ' + str(response.status_code), 10, 40)
         display.text('Response: ' + response.text, 10, 60)
         display.update()
