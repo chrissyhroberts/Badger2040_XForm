@@ -9,6 +9,7 @@
 # -----------------------------------------------------------------------------------------------
 
 import time
+import utime
 import machine
 import json
 import qrcode
@@ -19,6 +20,11 @@ import io
 import random
 import badger2040 # https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger2040.py
 import badger_os #https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger_os.py
+
+# Set badger CPU speed - higher numbers are faster but draw more power
+# 1-4. 4 is overclocking.
+
+badger2040.system_speed(4)
 
 print("starting form.py")
 
@@ -31,6 +37,10 @@ versionid = "1688347654"
 
 # The cvs file to write and accumulate saved form results
 submissions = "/forms/submissions.csv"
+
+# Initialise the rtc
+badger2040.pcf_to_pico_rtc()
+rtc = machine.RTC()
 
 # ------------------------------
 # Global Constants
@@ -153,6 +163,16 @@ def start():
     display.set_update_speed(badger2040.UPDATE_FAST)
     needs_refresh = True
 
+def get_time():
+    datetime_tuple = rtc.datetime()
+    return datetime_tuple
+
+def format_time(datetime_tuple):
+    year, month, day, weekday, hour, minute, second, _ = datetime_tuple
+    formatted_time = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+        year, month, day, hour, minute, second
+    )
+    return formatted_time
 
 def save():
     global state
@@ -168,8 +188,10 @@ def save():
 
     # ISO8601 local time (no timezone!); see https://github.com/micropython/micropython/issues/3087
     # Badger 2040 doesn't have an RTC, so the time resets when wake up! So the timestamp is only meaningful when running from Thonny!
-    state['timestamp'] = "%04u-%02u-%02uT%02u:%02u:%02u" % time.localtime()[0:6]
-
+    state['timestamp']
+    state['timestamp'] = get_time()
+    state['timestamp'] = format_time(state['timestamp'])
+    print("Current date and time:", state['timestamp'])
     # Append csv results to submissions file
     print("saving to '{}'".format(submissions))
     with open(submissions, "a") as f:
@@ -690,7 +712,7 @@ def show_end_page():
         size, _ = measure_qr_code(HEIGHT, code)
         draw_qr_code(WIDTH - size, (HEIGHT - size) // 2, HEIGHT, code)
     
-        datetime = state['timestamp'].split('T')
+        datetime = state['timestamp'].split(' ')
         y += OPTION_HEIGHT * 2
         display.text(datetime[0], 0, y, WIDTH, OPTION_TEXT_SIZE)
         y += OPTION_HEIGHT
@@ -863,3 +885,5 @@ while True:
         
     # Halt if on battery to save power; we will wake up and resume from saved state if any of the front buttons are pressed
     display.halt()
+
+
