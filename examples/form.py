@@ -28,6 +28,9 @@ badger2040.system_speed(4)
 
 print("starting form.py")
 
+# Get the time from the RPi Pico RTC. It is set by Thonny, whilst the pcf on the Badger 2040 is not.
+badger2040.pico_rtc_to_pcf()
+
 # The ODK Build form definition to load. * Must be an ODK Build json file, NOT an XForm xml or XLSForm xlsx! *
 form = "/forms/Badger 2040 Test.odkbuild"
 
@@ -885,5 +888,4 @@ while True:
         
     # Halt if on battery to save power; we will wake up and resume from saved state if any of the front buttons are pressed
     display.halt()
-
 
