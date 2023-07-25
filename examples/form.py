@@ -24,12 +24,35 @@ import badger_os #https://github.com/pimoroni/badger2040/blob/main/firmware/PIMO
 # Set badger CPU speed - higher numbers are faster but draw more power
 # 1-4. 4 is overclocking.
 
-badger2040.system_speed(4)
+badger2040.system_speed(3)
 
 print("starting form.py")
 
-# Get the time from the RPi Pico RTC. It is set by Thonny, whilst the pcf on the Badger 2040 is not.
-badger2040.pico_rtc_to_pcf()
+# ------------------------------
+# Clock features
+# ------------------------------
+rtc = machine.RTC()
+print("xxx ",rtc.datetime())
+
+def get_time():
+    rtc = machine.RTC()
+    datetime_tuple = rtc.datetime()
+    return datetime_tuple
+
+def format_time(datetime_tuple):
+    year, month, day, weekday, hour, minute, second, _ = datetime_tuple
+    formatted_time = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+        year, month, day, hour, minute, second
+    )
+    return formatted_time
+
+
+
+
+# ------------------------------
+# Form Definition
+# ------------------------------
+
 
 # The ODK Build form definition to load. * Must be an ODK Build json file, NOT an XForm xml or XLSForm xlsx! *
 form = "/forms/Badger 2040 Test.odkbuild"
@@ -41,9 +64,6 @@ versionid = "1688347654"
 # The cvs file to write and accumulate saved form results
 submissions = "/forms/submissions.csv"
 
-# Initialise the rtc
-badger2040.pcf_to_pico_rtc()
-rtc = machine.RTC()
 
 # ------------------------------
 # Global Constants
@@ -129,13 +149,14 @@ state = {
     'magnitude': 1, # 1x, 10x, 100x for Integer control
     'char_index': 0, # index of currently selected Text control character; CHARS[0] = A
     'values': [],
-    'timestamp': '',
+    'timestamp': format_time(get_time()),
     'button_A': None,
     'button_B': None,
     'button_C': None
 }
 
 badger_os.state_load("form", state)
+state['timestamp'] = format_time(get_time()) # correct the timestamp after loading the previous state
 print("initial state:", state)
 
 # ------------------------------
@@ -166,16 +187,6 @@ def start():
     display.set_update_speed(badger2040.UPDATE_FAST)
     needs_refresh = True
 
-def get_time():
-    datetime_tuple = rtc.datetime()
-    return datetime_tuple
-
-def format_time(datetime_tuple):
-    year, month, day, weekday, hour, minute, second, _ = datetime_tuple
-    formatted_time = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
-        year, month, day, hour, minute, second
-    )
-    return formatted_time
 
 def save():
     global state
@@ -888,4 +899,5 @@ while True:
         
     # Halt if on battery to save power; we will wake up and resume from saved state if any of the front buttons are pressed
     display.halt()
+
 
