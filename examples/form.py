@@ -20,6 +20,8 @@ import io
 import random
 import badger2040 # https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger2040.py
 import badger_os #https://github.com/pimoroni/badger2040/blob/main/firmware/PIMORONI_BADGER2040/lib/badger_os.py
+import sys
+from pcf85063a import PCF85063A
 
 # Set badger CPU speed - higher numbers are faster but draw more power
 # 1-4. 4 is overclocking.
@@ -27,32 +29,6 @@ import badger_os #https://github.com/pimoroni/badger2040/blob/main/firmware/PIMO
 badger2040.system_speed(3)
 
 print("starting form.py")
-
-# ------------------------------
-# Clock features
-# ------------------------------
-rtc = machine.RTC()
-print("xxx ",rtc.datetime())
-
-def get_time():
-    rtc = machine.RTC()
-    datetime_tuple = rtc.datetime()
-    return datetime_tuple
-
-def format_time(datetime_tuple):
-    year, month, day, weekday, hour, minute, second, _ = datetime_tuple
-    formatted_time = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
-        year, month, day, hour, minute, second
-    )
-    return formatted_time
-
-
-
-
-# ------------------------------
-# Form Definition
-# ------------------------------
-
 
 # The ODK Build form definition to load. * Must be an ODK Build json file, NOT an XForm xml or XLSForm xlsx! *
 form = "/forms/Badger 2040 Test.odkbuild"
@@ -65,6 +41,15 @@ versionid = "1688347654"
 submissions = "/forms/submissions.csv"
 
 
+# ------------------------------
+# Clock
+# ------------------------------
+# Initialise the rtc
+# Create PCF85063A RTC instance
+i2c = machine.I2C(0, scl=machine.Pin(5), sda=machine.Pin(4))
+rtc_pcf85063a = PCF85063A(i2c)
+# Display PCF85063A's RTC : call time from pcf rtc using command rtc_pcf85063a.datetime()
+print(f"PCF_RTC: {rtc_pcf85063a.datetime()}")
 # ------------------------------
 # Global Constants
 # ------------------------------
@@ -149,14 +134,13 @@ state = {
     'magnitude': 1, # 1x, 10x, 100x for Integer control
     'char_index': 0, # index of currently selected Text control character; CHARS[0] = A
     'values': [],
-    'timestamp': format_time(get_time()),
+    'timestamp': '',
     'button_A': None,
     'button_B': None,
     'button_C': None
 }
 
 badger_os.state_load("form", state)
-state['timestamp'] = format_time(get_time()) # correct the timestamp after loading the previous state
 print("initial state:", state)
 
 # ------------------------------
@@ -187,6 +171,16 @@ def start():
     display.set_update_speed(badger2040.UPDATE_FAST)
     needs_refresh = True
 
+def get_time():
+    datetime_tuple = rtc_pcf85063a.datetime()
+    return datetime_tuple
+
+def format_time(datetime_tuple):
+    year, month, day, hour, minute, second, weekday = datetime_tuple
+    formatted_time = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+        year, month, day, hour, minute, second
+    )
+    return formatted_time
 
 def save():
     global state
@@ -692,7 +686,7 @@ def show_start_page():
     y += OPTION_HEIGHT
     display.text(str(total_required) + " mandatory", 0, y, WIDTH, OPTION_TEXT_SIZE)
     
-    draw_menu(None, "Start", None)
+    draw_menu(None, "Start", "Exit")
     state['button_A'] = None
     state['button_B'] = 'start'
     state['button_C'] = None
@@ -851,44 +845,53 @@ else:
     print_form_info()
 
 while True:
-    display.keepalive()
+    try:
+        display.keepalive()
+
+        if badger2040.woken_by_button() or display.pressed_any():
+            if display.pressed(badger2040.BUTTON_UP):
+                show_previous()
+            elif display.pressed(badger2040.BUTTON_DOWN):
+                show_next()
+
+            # Handle button C press while show_start_page is running
+            if state['at_start'] and display.pressed(badger2040.BUTTON_C):
+                sys.exit()
+                    
+            if display.pressed(badger2040.BUTTON_DOWN):
+                show_next()
+            
+            # https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string
+            if display.pressed(badger2040.BUTTON_A):
+                handler = state['button_A']
+                if handler is not None:
+                    locals()[handler]()
+                
+            if display.pressed(badger2040.BUTTON_B):
+                handler = state['button_B']
+                if handler is not None:
+                    locals()[handler]()
+                
+            if display.pressed(badger2040.BUTTON_C):
+                handler = state['button_C']
+                if handler is not None:
+                    locals()[handler]()
         
-    if badger2040.woken_by_button() or display.pressed_any():
-        if display.pressed(badger2040.BUTTON_UP):
-            show_previous()
-            
-        if display.pressed(badger2040.BUTTON_DOWN):
-            show_next()
-            
-        # https://stackoverflow.com/questions/3061/calling-a-function-of-a-module-by-using-its-name-a-string
-        if display.pressed(badger2040.BUTTON_A):
-            handler = state['button_A']
-            if handler is not None:
-                locals()[handler]()
-                
-        if display.pressed(badger2040.BUTTON_B):
-            handler = state['button_B']
-            if handler is not None:
-                locals()[handler]()
-                
-        if display.pressed(badger2040.BUTTON_C):
-            handler = state['button_C']
-            if handler is not None:
-                locals()[handler]()
+
             
         badger2040.reset_pressed_to_wake()
         
-    if needs_refresh:
-        display.set_pen(WHITE)
-        display.clear()
-        display.set_pen(BLACK)
+        if needs_refresh:
+            display.set_pen(WHITE)
+            display.clear()
+            display.set_pen(BLACK)
     
-        if state['at_start']:
-            show_start_page()
-        elif state['at_end']:
-            show_end_page()
-        else:
-            show_current_control()
+            if state['at_start']:
+                show_start_page()
+            elif state['at_end']:
+                show_end_page()
+            else:
+                show_current_control()
                 
         display.update()
         display.set_update_speed(badger2040.UPDATE_TURBO)
@@ -897,7 +900,15 @@ while True:
         print("state:", state)
         needs_refresh = False
         
+    
     # Halt if on battery to save power; we will wake up and resume from saved state if any of the front buttons are pressed
-    display.halt()
+        display.halt()
+
+    except SystemExit:
+        # Catch the SystemExit exception and return to launcher.py
+ #       badger2040.reset_pressed_to_wake()
+        #badger_os.state_launch()
+        print('killing app')
+        badger_os.launch('launcher')
 
 
