@@ -1,6 +1,9 @@
 # Badger2040_XForm
 An XForm interface for Badger2040
 
+![img/question_select_one.jpg](img/question_select_many.jpg)  
+
+
 The Badger 2040 is a wearable device with an e-ink display which comes in two flavours, either with or without WiFi. 
 
 
