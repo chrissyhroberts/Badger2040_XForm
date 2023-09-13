@@ -131,7 +131,7 @@ The user interface is pretty self-explanatory
 
 Text type questions allow the user to use buttons A <LEFT> and C <RIGHT> to scroll through a set of characters [A-Z + SPACE] and to select (Button C) or delete (select character DEL). At present the system does not wrap around from Z to A. Data entry takes a while and we expect that this type of question will be less often used that select types. 
 
-![img/question_integer.jpg](img/question_text.jpg)
+![img/question_integer.jpg](img/question_freetext.jpg)
 
 
 ### Integer
