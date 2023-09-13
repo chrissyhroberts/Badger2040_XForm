@@ -75,8 +75,12 @@ Various aspects of the XLSForm are outside the scope of the device's limited com
 
 # Writing a form for Badger2040_XForm 
 
-This software takes as input an XLS form in JSON format. At present the only way to get the correct format is in ODK Build (https://build.getodk.org/).
+This software takes as input an XLS form in JSON format. At present the only way to get the correct format is in ODK Build (https://build.getodk.org/) or KoBo Build.
 
+In Kobo Toolbox you can see it in the API response for any form,
+but a shortcut is in the UI also if you open a project and replace the last part of the URL with ‘json’
+
+e.g. https://kf.kobotoolbox.org/#/forms/[assetuid]/json
 ## Design your form, using only the types of questions that have been implemented. 
 
 Badger2040_XForm respects the following flags
