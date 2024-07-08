@@ -167,7 +167,63 @@ Note that you should probably use the credentials of a user who has no higher ac
 
 
 
+## Description of form.py
 
+This Python script is designed to run on a Pimoroni Badger 2040/2040W device, providing a form engine compatible with ODK (Open Data Kit). The script loads an ODK Build form definition in JSON format, manages user input through various form controls, and saves form submissions in CSV and XML formats. Here's a detailed breakdown of its components:
+
+### Imports and Initial Setup
+
+The script begins with necessary imports and initial settings:
+
+- Standard libraries: `time`, `utime`, `json`, `os`, `io`, `random`, `sys`.
+- Libraries specific to the Badger 2040 hardware: `badger2040`, `badger_os`.
+- External libraries: `qrcode`, `ubinascii`, `jpegdec`, and `machine` for hardware interaction.
+- Custom libraries: `pcf85063a` for the RTC module.
+
+### Constants and Global Variables
+
+Several constants define the display dimensions, font settings, menu button positions, colors, character sets, and other UI elements.
+
+### Loading Form Definition
+
+The form definition is loaded from a JSON file specified by the `form` variable. The JSON structure contains controls and metadata which define the form's behavior and appearance.
+
+### State Management
+
+A `state` dictionary holds the current state of the form, including the position in the form, current control values, and other necessary flags. This state is loaded from and saved to non-volatile memory using `badger_os.state_load` and `badger_os.state_save`.
+
+### Button Actions
+
+Functions define the behavior for various button actions, such as navigating through the form (`start`, `show_previous`, `show_next`), adjusting integer values (`increment`, `decrement`, `change_magnitude`), selecting options (`next_option`, `previous_option`, `select_option`), and managing text input (`next_char`, `previous_char`, `select_char`).
+
+### Drawing Functions
+
+These functions handle rendering the UI elements on the Badger 2040's display, including text, buttons, scrollbars, options, checkboxes, and radio buttons. They ensure the UI is updated correctly based on user interactions and form state.
+
+### QR Code Generation
+
+The form's data can be converted into a QR code for easy transfer. The `csv` function compiles the form data into a CSV format, and `draw_qr_code` renders the QR code on the display.
+
+### Disk Usage and Progress Bar
+
+Utility functions like `map_value` and `draw_progress_bar` are used to display disk usage, giving users an indication of available storage.
+
+### Main Function
+
+The main loop manages the form's display and user interactions. It checks for button presses, updates the display as needed, and handles form submission.
+
+### Usage
+
+To use this script on a Badger 2040 device:
+
+1. **Prepare the Form**: Create an ODK Build JSON form and place it in the `/forms` directory on the device.
+2. **Upload the Script**: Copy this script to the Badger 2040.
+3. **Run the Script**: Execute the script on the device. The form will be loaded, and the user can navigate and fill it out using the buttons on the device.
+4. **Save and Submit**: The filled form can be saved, generating CSV and XML files that can be uploaded to an ODK Central server.
+
+### Conclusion
+
+This script provides a complete solution for filling out ODK forms on a Badger 2040 device, including user interaction, form management, and data submission. It demonstrates how to leverage the hardware capabilities of the Badger 2040 to create a functional and user-friendly form engine.
 
 
 
